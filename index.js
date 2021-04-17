@@ -22,6 +22,7 @@ const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster
 const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology: true });
 client.connect(err => {
   const productCollection = client.db("music").collection("book");
+  const productCollectionForReviews = client.db("music").collection("reviews");
 
   app.get("/book", (req, res) => {
     productCollection.find().toArray((err, items) => {
@@ -38,6 +39,25 @@ client.connect(err => {
       res.send(result.insertedCount > 0);
   });
   })
+
+
+  app.get("/reviews", (req, res) => {
+    productCollectionForReviews.find().toArray((err, review) => {
+        res.send(review);
+    });
+});
+
+app.post('/comment', (req, res) => {
+  const newReviews = req.body;
+  console.log('adding new reviews', newReviews);
+  productCollectionForReviews.insertOne(newReviews)
+  .then((result) => {
+    console.log("inserted count", result.insertedCount);
+    res.send(result.insertedCount > 0);
+});
+})
+
+
  
 });
 
