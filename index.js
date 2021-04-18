@@ -25,6 +25,7 @@ const client = new MongoClient(uri, { useNewUrlParser: true, useUnifiedTopology:
 client.connect(err => {
   const productCollection = client.db("music").collection("book");
   const productCollectionForReviews = client.db("music").collection("reviews");
+  const productCollectionForOrder = client.db("music").collection("orders");
 
   app.get("/book", (req, res) => {
     productCollection.find().toArray((err, items) => {
@@ -68,6 +69,26 @@ app.post('/comment', (req, res) => {
 });
 })
 
+
+app.post("/addOrders", (req, res) => {
+  const newOrder = req.body;
+  productCollectionForOrder.insertOne(newOrder).then((result) => {
+      res.send(result.insertedCount > 0);
+  });
+});
+
+app.get("/order", (req, res) => {
+  productCollectionForOrder.find().toArray((err, items) => {
+      res.send(items);
+  });     
+});
+
+app.delete('/delete/:_id',(req,res) => {
+  productCollection.deleteOne({_id:ObjectId(req.params.id)})
+  .then((result) => {
+      res.send(result.deletedCount>0);
+  })
+});
 
 
 
