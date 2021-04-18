@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const ObjectId = require("mongodb").ObjectId;
 
 require("dotenv").config();
+
 const port = process.env.PORT || 5000
 
 
@@ -98,4 +99,5 @@ app.delete('/delete/:_id',(req,res) => {
 
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`)
+  process.env.PORT || port
 })
