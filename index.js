@@ -2,7 +2,7 @@ const express = require('express')
 const MongoClient = require('mongodb').MongoClient;
 const cors = require("cors");
 const bodyParser = require("body-parser");
-const ObjectId = require("mongodb").ObjectId;
+var ObjectId = require('mongodb').ObjectId;
 
 require("dotenv").config();
 
@@ -27,6 +27,7 @@ client.connect(err => {
   const productCollection = client.db("music").collection("book");
   const productCollectionForReviews = client.db("music").collection("reviews");
   const productCollectionForOrder = client.db("music").collection("orders");
+  const productCollectionForAdmin = client.db("music").collection("admins");
 
   app.get("/book", (req, res) => {
     productCollection.find().toArray((err, items) => {
@@ -84,12 +85,59 @@ app.get("/order", (req, res) => {
   });     
 });
 
-app.delete('/delete/:_id',(req,res) => {
-  productCollection.deleteOne({_id:ObjectId(req.params.id)})
-  .then((result) => {
-      res.send(result.deletedCount>0);
-  })
+// app.delete('/delete/:_id',(req,res) => {
+//   productCollectionForOrder.findOneAndDelete({_id:ObjectId(req.params.id)})
+//   .then((result) => {
+//       res.send(result.deletedCount>0);
+//   })
+// });
+app.delete("/delete/:id", (req, res) => {
+  // const id = req.params.id;
+  // productCollectionForOrder
+  //   .findOneAndDelete({ _id: id })
+  //   .then((deletedDocument) => {
+  //     if (deletedDocument) {
+  //       console.log("deleted");
+  //     } else console.log("not deleted");
+  //     return deletedDocument;
+  //   })
+  //   .catch((err) => console.log("failed to find"));
+  // console.log(id)
+
+
+
+  const id =ObjectId((req.params.id));
+  productCollectionForOrder.findOneAndDelete({_id:id})
+    .then(documents=> {
+      res.send(!!documents.value);
+      console.log("Service deleted successfully");
+    })
 });
+
+//admin
+app.post("/addAdmin", (req, res) => {
+  const newAdmin = req.body;
+  console.log("new admin", newAdmin);
+
+  productCollectionForAdmin.insertOne(newAdmin).then((result) => {
+    res.send(result.insertedCount > 0);
+  });
+});
+
+app.post("/isAdmin", (req, res) => {
+  const email = req.body.email;
+
+  productCollectionForAdmin.find({ email: email }).toArray((err, admins) => {
+    res.send(admins.length > 0);
+  });
+});
+
+//case
+app.get("/cases", (req, res) => {
+  productCollectionForOrder.find({ email: req.query.email }).toArray((err, document) => {
+    res.send(document);
+  });
+})
 
 
 
