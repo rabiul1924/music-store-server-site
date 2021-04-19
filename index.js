@@ -85,27 +85,8 @@ app.get("/order", (req, res) => {
   });     
 });
 
-// app.delete('/delete/:_id',(req,res) => {
-//   productCollectionForOrder.findOneAndDelete({_id:ObjectId(req.params.id)})
-//   .then((result) => {
-//       res.send(result.deletedCount>0);
-//   })
-// });
+
 app.delete("/delete/:id", (req, res) => {
-  // const id = req.params.id;
-  // productCollectionForOrder
-  //   .findOneAndDelete({ _id: id })
-  //   .then((deletedDocument) => {
-  //     if (deletedDocument) {
-  //       console.log("deleted");
-  //     } else console.log("not deleted");
-  //     return deletedDocument;
-  //   })
-  //   .catch((err) => console.log("failed to find"));
-  // console.log(id)
-
-
-
   const id =ObjectId((req.params.id));
   productCollectionForOrder.findOneAndDelete({_id:id})
     .then(documents=> {
@@ -132,7 +113,6 @@ app.post("/isAdmin", (req, res) => {
   });
 });
 
-//case
 app.get("/cases", (req, res) => {
   productCollectionForOrder.find({ email: req.query.email }).toArray((err, document) => {
     res.send(document);
